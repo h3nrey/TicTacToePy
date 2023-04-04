@@ -11,6 +11,7 @@ gameWon = False;
 whoWon = "";
 draw = False;
 pieces = 0;
+wonLinePos = [(0,0),(700,400)]
 
 game = [
     ["", "", ""], 
@@ -45,37 +46,39 @@ def CreateIcon(pos):
 def CheckGame():
     global game, turn, gameWon, whoWon, draw;
     gameWon = False;
-        
-    # CHECK COLUMN
-    if(game[0][0] == turn and game[0][1] == turn and game[0][2] == turn):
-        gameWon = True;
-        whoWon = turn;
-    elif(game[1][0] == turn and game[1][1] == turn and game[1][2] == turn):
-        gameWon = True;
-        whoWon = turn;
-    elif(game[2][0] == turn and game[2][1] == turn and game[2][2] == turn):
-        gameWon = True;
-        whoWon = turn;
+    won = False;
 
-    # CHECK ROW
-    if(game[0][0] == turn and game[1][0] == turn and game[2][0] == turn):
-        gameWon = True;
-        whoWon = turn;
-    elif(game[0][1] == turn and game[1][1] == turn and game[2][1] == turn):
-        gameWon = True;
-        whoWon = turn;
-    elif(game[0][2] == turn and game[1][2] == turn and game[2][2] == turn):
-        gameWon = True;
-        whoWon = turn;
+    # Check Vertical
+    for i in range(3):
+        if((game[i][0] == game[i][1] == game[i][2]) and game[i][0]!=""):
+            print(f"x = {i}")
+            wonLinePos[0] = ((i+1) * 100, 1 *100);
+            wonLinePos[1] = ((i+1) * 100, 3*100);
+            won = True;
+    
+    #Check Horizontal
+    for i in range(3):
+        if((game[0][i] == game[1][i] == game[2][i]) and game[0][i]!=""):
+            wonLinePos[0] = (1 * 100, (i+1) * 100);
+            wonLinePos[1] = (3 * 100, (i+1) * 100);
+            won = True;
 
-    # turn DIAGONAL    
+    # Check Diagonal   
     if(game[0][0] == turn and game[1][1] == turn and game[2][2] == turn):
-        gameWon = True;
-        whoWon = turn;
+        won =  True
+        wonLinePos[0] = (1 * 100, 1 * 100);
+        wonLinePos[1] = (3 * 100, 3 * 100);
     elif(game[0][2] == turn and game[1][1] == turn and game[2][0] == turn):
+        wonLinePos[0] = (3 * 100, 1 * 100);
+        wonLinePos[1] = (1 * 100, 3 * 100);
+        won = True;
+
+    if(won == True):
         gameWon = True;
         whoWon = turn;
+        return;
 
+    # Check Draw
     if(pieces == 9): 
         draw = True;
         return;
@@ -167,13 +170,14 @@ while True:
     symbol.update();
     
     text.add(Text("Tic Tac Toe", 64, (530,100)))
+    DrawWireFrame();
     if(gameWon == True or draw == True):
         if (draw == True):  
             wonText = text.add(Text(f"Draw", 64, (530,200)));
         elif(gameWon == True):
+            pygame.draw.line(screen, "#eeeeee", wonLinePos[0], wonLinePos[1], 20)
             text.add(Text(f"{whoWon} won", 64, (530,200)));
     text.draw(screen);
     
 
-    DrawWireFrame();
     pygame.display.update();
