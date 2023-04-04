@@ -2,7 +2,8 @@ import pygame;
 from sys import exit
 pygame.init();
 
-screen = pygame.display.set_mode((600, 450));
+screen = pygame.display.set_mode((700, 400));
+screen.fill("#1F2026")
 clock = pygame.time.Clock();
 FPS = 60;
 turn = "x";
@@ -18,8 +19,8 @@ game = [
 ]
 def DrawWireFrame():
     global screen;
-    thickness = 10
-    color = "#eeeeee"
+    thickness = 16
+    color = "#3A3A3A"
     pygame.draw.line(screen, color, (250,50), (250, 350), thickness);
     pygame.draw.line(screen, color, (150,50), (150, 350), thickness);
     pygame.draw.line(screen, color, (50,150), (350, 150), thickness);
@@ -30,7 +31,7 @@ def CreateIcon(pos):
     gameIndex = (int(pos[0]/100),int(pos[1]/100))
     print(turn);
 
-    if(gameWon == True): return;
+    if(gameWon == True or draw == True): return;
     if(game[gameIndex[0] - 1][gameIndex[1] - 1] == ""):
         pieces += 1;
         game[gameIndex[0] - 1][gameIndex[1] - 1] = turn;
@@ -84,7 +85,7 @@ class Text(pygame.sprite.Sprite):
     def __init__(self, text, size, pos,  fontfamily = "pixel.ttf"):
         super().__init__();
         self.font = pygame.font.Font(f"Assets/{fontfamily}", size);
-        self.image = self.font.render(text, False, "red");
+        self.image = self.font.render(text, False, "#757575");
         self.rect = self.image.get_rect(center = pos);
     def kill(self):
         self.kill();
@@ -95,7 +96,7 @@ class RectButton(pygame.sprite.Sprite):
         # self.size = pygame.Rect(());;
         # self.image = pygame.draw.rect(screen, "red", self.size);
         self.image = pygame.image.load("Assets/square.png");
-        self.image.fill("#222222")
+        self.image.fill("#1F2026")
         self.pos = pos;
         self.rect = self.image.get_rect(center = self.pos);
         self.callback = callbalck
@@ -110,10 +111,10 @@ class Symbol(pygame.sprite.Sprite):
     def __init__(self, pos, type):
         super().__init__();
 
-        self.image = pygame.Surface((90,90));
+        self.font = pygame.font.Font(f"Assets/pixel.ttf", 96);
         if(type == "x"):
-            self.image.fill("green");
-        else: self.image.fill("red");
+            self.image = self.font.render("X", False, "#757575");
+        else: self.image = self.font.render("O", False, "#757575");
         self.rect = self.image.get_rect(center = pos);
 
 button = pygame.sprite.Group();
@@ -157,7 +158,7 @@ while True:
                 whoWon = ""
                 turn = "x"
                 text.empty();
-                screen.fill("black");
+                screen.fill("#1F2026")
     
     button.draw(screen);
     button.update(events);
@@ -165,14 +166,12 @@ while True:
     symbol.draw(screen);
     symbol.update();
     
-
+    text.add(Text("Tic Tac Toe", 64, (530,100)))
     if(gameWon == True or draw == True):
         if (draw == True):  
-            wonText = text.add(Text(f"Draw", 48, (500,50)));
-            draw = False;
+            wonText = text.add(Text(f"Draw", 64, (530,200)));
         elif(gameWon == True):
-            text.add(Text(f"{whoWon} wins", 48, (500,50)));
-            gameWon = False;
+            text.add(Text(f"{whoWon} won", 64, (530,200)));
     text.draw(screen);
     
 
