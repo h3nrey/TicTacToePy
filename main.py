@@ -44,10 +44,6 @@ def CreateIcon(pos):
 def CheckGame():
     global game, turn, gameWon, whoWon, draw;
     gameWon = False;
-
-    if(pieces == 9): 
-        draw = True;
-        return;
         
     # CHECK COLUMN
     if(game[0][0] == turn and game[0][1] == turn and game[0][2] == turn):
@@ -78,7 +74,10 @@ def CheckGame():
     elif(game[0][2] == turn and game[1][1] == turn and game[2][0] == turn):
         gameWon = True;
         whoWon = turn;
-    # if(game)
+
+    if(pieces == 9): 
+        draw = True;
+        return;
     return False
 
 class Text(pygame.sprite.Sprite):
@@ -87,6 +86,8 @@ class Text(pygame.sprite.Sprite):
         self.font = pygame.font.Font(f"Assets/{fontfamily}", size);
         self.image = self.font.render(text, False, "red");
         self.rect = self.image.get_rect(center = pos);
+    def kill(self):
+        self.kill();
 
 class RectButton(pygame.sprite.Sprite):
     def __init__(self,pos,callbalck):
@@ -135,25 +136,45 @@ symbol = pygame.sprite.Group();
 
 
 text = pygame.sprite.Group();
+wonText = "";
 while True:
     events = pygame.event.get();
     for event in events:
         if(event.type == pygame.QUIT):
             pygame.quit();
             exit();
+        if(event.type == pygame.KEYDOWN):
+            if(event.key == pygame.K_r):
+                gameWon = False;
+                draw = False;
+                game = [
+                    ["", "", ""], 
+                    ["", "", ""],
+                    ["" ,"", ""]
+                ];
+                symbol.empty();
+                pieces = 0;
+                whoWon = ""
+                turn = "x"
+                text.empty();
+                screen.fill("black");
     
     button.draw(screen);
     button.update(events);
 
     symbol.draw(screen);
     symbol.update();
+    
+
     if(gameWon == True or draw == True):
         if (draw == True):  
-            text.add(Text(f"Draw", 48, (500,50)));
-        else:
+            wonText = text.add(Text(f"Draw", 48, (500,50)));
+            draw = False;
+        elif(gameWon == True):
             text.add(Text(f"{whoWon} wins", 48, (500,50)));
-        print("ganhou");
-
+            gameWon = False;
     text.draw(screen);
+    
+
     DrawWireFrame();
     pygame.display.update();
